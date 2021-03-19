@@ -1,11 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import fourier
-
 import fract
 
-N = 8
+N = 9
 
 stat_n = 30
 
@@ -25,9 +23,13 @@ for (i,H) in enumerate( np.arange(start,stop=stop,step=step) ):
         # generate
         # Random.seed!(729 + i*34);
         data = fract.fbm2D(H,N=N)
+        data_plane, _ = np.mgrid[0:data.shape[0], 0:data.shape[1]]
+
+        # data = data + data_plane/5.0
+
 
         # dfa
-        h_detected, freq_exp, c, freqs, powers = fract.profile_fourier_from_z2d(data)
+        h_detected, c, scales, flucts = fract.dfa_H(data, approx="quadratic", estimator="rms")
         stat_res[j] = h_detected
         # print("     ", j)
 
@@ -47,14 +49,12 @@ liney = [0.075,0.925]
 plt.plot(linex, liney)
 plt.show()
 
-# res10 = res
 
-# past_reses = [res8, res9, res10]
 
-# for i,r in enumerate(past_reses):
-#     plt.errorbar(r[:,0], r[:,1], yerr=r[:,2], label=str(8+i));
-#     plt.plot(linex, liney)
-# plt.xlabel("generation H")
-# plt.ylabel("detected H")
-# linex = [0.075,0.925]
-# liney = [0.075,0.925]
+np.savetxt("results4.csv", res, delimiter=";")
+
+
+
+# res = np.loadtxt("results.csv", delimiter=";")
+
+

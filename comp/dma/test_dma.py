@@ -1,13 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import fourier
-
 import fract
+import c_dma
 
 N = 8
 
-stat_n = 30
+stat_n = 50
 
 start = 0.1
 stop = 0.9001
@@ -27,8 +26,10 @@ for (i,H) in enumerate( np.arange(start,stop=stop,step=step) ):
         data = fract.fbm2D(H,N=N)
 
         # dfa
-        h_detected, freq_exp, c, freqs, powers = fract.profile_fourier_from_z2d(data)
-        stat_res[j] = h_detected
+        scales, flucts = c_dma.dma_1(data)
+        dma_H, dma_c, pcov = fract.autoseeded_weighted_power_law_fit(scales, flucts, sigmas=flucts)
+
+        stat_res[j] = dma_H
         # print("     ", j)
 
     av_h_detected = np.mean(stat_res)
@@ -46,6 +47,8 @@ linex = [0.075,0.925]
 liney = [0.075,0.925]
 plt.plot(linex, liney)
 plt.show()
+
+np.savetxt("results.txt", res)
 
 # res10 = res
 

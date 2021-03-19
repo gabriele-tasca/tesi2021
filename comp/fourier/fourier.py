@@ -69,7 +69,7 @@ def pow_law_jacobian(x, a, b):
 
 if __name__ == '__main__':
     print("generating")
-    N = 9
+    N = 8
     gen_H = np.float64(0.7)
     z2d = fract.fbm2D(gen_H, N)
 
@@ -90,7 +90,11 @@ if __name__ == '__main__':
 
     
     
-    # plt.plot(freqs, pow_law(freqs, *popt), color="green")
+    plt.plot(freqs, pow_law(freqs, *popt), color="green")
+
+
+    autoexp, autoc, autopcov = fract.autoseeded_weighted_power_law_fit(freqs, powers, sigmas=sigmas)
+    plt.plot(freqs, pow_law(freqs, autoexp, autoc), color="gray")
 
 
     expected_freq_exp = -1.5 - 2.0*gen_H
@@ -99,7 +103,7 @@ if __name__ == '__main__':
 
     plt.scatter(freqs,powers, marker=".", color="deepskyblue")
     plt.plot(freqs, (10**c)*freqs**freq_exp, color="purple")
-    plt.plot(freqs, (10**c)*freqs**expected_freq_exp, color="red")
+    # plt.plot(freqs, (10**c)*freqs**expected_freq_exp, color="red")
     plt.xscale("log")
     plt.yscale("log")
     plt.title("H = " + str(detect_H))

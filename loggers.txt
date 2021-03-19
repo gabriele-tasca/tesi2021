@@ -1,0 +1,78 @@
+1 - hurstgen  1D: generazione fbm con midpoint displacement (feder), rescaled-range per rilevare H (vailati-mandelbrot).
+              2D: same generation but scuffed
+  
+2 - dfa: 2D dfa per rilevare H. just werks, slow, si può provare con interpolazione con piano invece che x^2 + y^2 + xy + ...
+     profili disegnati a mano, test dfa su profili. mega scuffed.
+        
+3 - var-b: metodi variable bandwidth (schmittbuhl) rms e range. werks, distorsione uguale a schmittbuhl, didn't try on profiles.
+
+4 - fourier: immagini di fft(image), correlazione, spettro di potenza. si vede che generazione scarsa porta a effetto croce in fft(image)
+         power spectrum fit (schmittbuhl + falconer(proof) + thin film surfaces?), werks very well. no prova su profili
+
+5 - paraview - triangolazione con specular! 
+
+- - - - -- - - 
+
+18/02 - didn't figure out fits, tried to remove oscillations in var_b range. (ipotesi è che siano dovute al tassellamento incompleto che 
+        finisce per guardare solo la parte in alto a destra.) il metodo non funziona piu di tanto, rallenta di molto, può 
+        introdurre correlazioni tra i dati.  
+
+19/02 - fit con curve_fit e pesi 1/y funziona bene per fourier, mica tanto per gli altri (in cui l'esponente ha il segno opposto per il fatto 
+        che sull'asse x non c'è la frequenza ma la scala, che è l'inverso.
+        oscill/tassellamento, guardando le linee verticali si nota che le deviazioni A VOLTE coincidono con le scale che dividono esattamente il lato.
+        tuttavia succede lo stesso con il metodo rolling average/submatrix spam (solved-nothing.png). con il metodo 4-angoli succede un po'
+        meno? questo per range almeno, ma 
+        dfa simile?
+        con le correzioni, le regioni al centro del quadrato sono contate più volte.
+
+24/02 - /comp/profiles/fourier-profiles , con fourier il profilo ha un impatto very big
+
+      - i fit con profili sono spesso ancora peggio del solito, probabilmente non basta cambiare i fit per azzerare l'impatto, alla fine 
+        fourier con i fit di prima funziona benissimo nel senso Hgen -> Hdet 
+
+
+2/03 - triangolazione artigianale per calcolare l'area
+
+3/03 - H di ghiacciai. il metodo Fourier da dei numeri sensati. Range e rms danno praticamente sempre 1. we suddenly discover dependence on slope.
+
+     - autoseeded fit.
+     
+8/03 - i risultati di Fourier sono spesso simili al valore 0.65 che viene per dati piatti. molti ghiacciai sono effettivamente piatti quindi questo 
+       non è per forza male, ma sarebbe da verificare 1) perché i numeri piatti danno 0.65 (H) /-2.8 (freq exp), e 2) se c'è un bias dovuto alla slope
+
+     - dfa dà spesso valori intorno a 0.85 che è il valore che esce da fbm con H vicino a 1.
+     - i dati piatti davvero invece danno H = 1.28, che anche quello compare, come nei secondi rami del caso sotto.
+       da notare però che dati piatti con noise gaussiano danno la legge esponenziale che ci si aspetta (quindi nessun H serio),
+       che fa pensare che il 1.28 dei piatti sia docuto a qualche effetto floating point strano. Nel qual caso non c'entrerebbe con il di sotto
+         
+     - invece in certi casi, come Adamello, ci sono due rami con pendenze diverse, separazione netta tra i due rami. ipotesi è che vengano dal fatto che 
+       non c'è un mean plane ma una superficie media complessa ma non frattale, e che la separazione sia data dalla scala della "faccia" elementare della 
+       superficie, al di sopra della quale il piano della dfa non serve a niente e esce il risultato random.
+         esempi, Adamello, Pizzo Scalino, un po' Scerscen Superiore e Inferiore, Pisgana Ovest
+         
+     - né DFA_H né Fourier H sono correlati con area ratio. 
+       soprattutto non sono correlati tra di loro.
+
+11/03 - algoritmo DMA detrending moving average in ctypes. probably million bugs and pretty slow in general.
+
+
+------------------------next:------------------------------
+
+funzione fit 2 branch
+x^{a}\left(1+\left(\frac{x}{x_{t}}\right)^{b}\right)
+
+generazione con condizioni al contorno periodiche or something
+
+RIFARE I TEST PROFILI con dfa, nuovo range, nuovo rms
+
+dfa con piani di approx più piccoli del quadrato s^2?
+
+controllare esponente test di fourier
+
+wavelet?
+
+HIGUCHI METHOD? LOL
+
+
+power law fit invece che log-log regression -- done, maximum likelihood rimane ma prob balza
+oscillazioni strane in var_b range  -- fluttuazioni del bordo della tassellazione in quadrati e effetti simili- non è rilevante nei dati reali 
