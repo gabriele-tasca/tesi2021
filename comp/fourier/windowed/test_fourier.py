@@ -1,16 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import fourier
+
 import fract
-import c_dma
 
-z2d = fract.fbm2D(H=0.6, N=8)
+N = 9
 
-dmah, dmac, arr1, arr2 = fract.dma_H(z2d)
-
-N = 8
-
-stat_n = 50
+stat_n = 20
 
 start = 0.1
 stop = 0.9001
@@ -27,13 +24,11 @@ for (i,H) in enumerate( np.arange(start,stop=stop,step=step) ):
 
         # generate
         # Random.seed!(729 + i*34);
-        data = fract.fbm2D(H,N=N)
+        z2d = fract.fbm2D_midpoint_old2(H,N=N)
 
         # dfa
-        scales, flucts = c_dma.dma_1(data)
-        dma_H, dma_c, pcov = fract.autoseeded_weighted_power_law_fit(scales, flucts, sigmas=flucts)
-
-        stat_res[j] = dma_H
+        h_detected = 2*fract.fourier_H(z2d, data=False)
+        stat_res[j] = h_detected
         # print("     ", j)
 
     av_h_detected = np.mean(stat_res)
@@ -43,10 +38,7 @@ for (i,H) in enumerate( np.arange(start,stop=stop,step=step) ):
     newrow = np.transpose([H, av_h_detected, std_h_detected])
     res[i,:] = newrow
 
-
-
-res = np.loadtxt("results.txt")
-
+# print(res)
 plt.errorbar(res[:,0], res[:,1], yerr=res[:,2]);
 plt.xlabel("generation H")
 plt.ylabel("detected H")
@@ -55,5 +47,14 @@ liney = [0.075,0.925]
 plt.plot(linex, liney)
 plt.show()
 
-# np.savetxt("results.txt", res)
+# res10 = res
 
+# past_reses = [res8, res9, res10]
+
+# for i,r in enumerate(past_reses):
+#     plt.errorbar(r[:,0], r[:,1], yerr=r[:,2], label=str(8+i));
+#     plt.plot(linex, liney)
+# plt.xlabel("generation H")
+# plt.ylabel("detected H")
+# linex = [0.075,0.925]
+# liney = [0.075,0.925]

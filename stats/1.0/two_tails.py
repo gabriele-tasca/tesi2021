@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import fract
+from fract import *
 
 df = pd.read_csv("stats.csv", sep=";")
 
@@ -155,7 +156,6 @@ plt.plot(scales3, fract.power_law(scales3, fourier_H, c2/0.8), color="purple", l
 plt.xscale("log")
 plt.yscale("log")
 plt.legend()
-plt.title(name)
 plt.show()
 
 

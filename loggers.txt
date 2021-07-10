@@ -53,7 +53,11 @@
      - né DFA_H né Fourier H sono correlati con area ratio. 
        soprattutto non sono correlati tra di loro.
 
-11/03 - algoritmo DMA detrending moving average in ctypes. probably million bugs and pretty slow in general.
+11/03 - algoritmo DMA detrending moving average con ctypes. probably million bugs and pretty slow in general.
+
+24/03 - FF to now: messo a posto DMA (credo), scritto higuchi. DMA su fbm sintetico dà una curva sfasata all'insù (di ~0.2) ma 
+        abbastanza fedele come pendenza. Higuchi su fbm sintetico è abbastanza buono. Entrambi sensati anche con cut_profile.
+        Sui dati reali, risultati completamente random. Non solo pendenze random ma anche curve strane.
 
 
 ------------------------next:------------------------------
@@ -76,3 +80,80 @@ HIGUCHI METHOD? LOL
 
 power law fit invece che log-log regression -- done, maximum likelihood rimane ma prob balza
 oscillazioni strane in var_b range  -- fluttuazioni del bordo della tassellazione in quadrati e effetti simili- non è rilevante nei dati reali 
+
+
+
+immagini e schemi da fare:
+- imshow(z2d) per i 3 metodi di generazione, x 3 valori di H. --done
+
+- grafici di fedeltà H_gen - H_det per i vari metodi di analisi (e generazione, forse)
+
+- schema box-counting con triangolazione  --nah
+
+
+low-quality H_gen-H_det response. as usual. RECAP:
+
+    - box-counting analysis
+            - exact gen:        not bad, slope slightly off for H<0.75. 
+            - midpoint gen:     not bad, slope off throughout, but similar to some old results.
+            
+    - fourier analysis
+            - exact gen:        good up until ~0.5, very bad above.
+            - midpoint gen:     good up until ~0.6, bad above.
+             
+    - dfa analysis
+            - exact gen:        good up until ~0.5, very bad above, but stdev goes way up so that it remains consistent technically..
+            - midpoint gen:     good up until ~0.6, bad above, but stdev goes way up so that it remains consistent technically.
+
+    - higuchi analysis
+            - exact gen:        actually very good.
+            - midpoint gen:     actually pretty good.
+
+
+
+-- lezioni importanti su fourier analysis.
+       Con gen exact e midpoint, il problema più grosso è quello della nonperiodicità, che aggiunge un enorme contributo 1/q^2 (vedi articolo) 
+            che fa sì che il grafico gen - det sia buono solo per genH basso, e poi si appiattisca intorno a detH ~ 0.5 ~0.6 .
+            Questo si risolve abbastanza bene con il windowing.
+            
+            il secondo problema è il fatto che il power diventa costante oltre un certo q_cutoff (cioè per q grandi == lambda piccoli).
+            questo si risolve tagliando fuori i q troppo grossi. quali sono è chiaro dalla regressione. Comunque in genere l'effetto sul grafico
+            genH-detH è uno shift costante verso il basso (det_H < gen_H), cioè rimane una retta parallela.
+            Comunque questo è un problema di GENERAZIONE e non di analisi, vedi sotto.
+        
+        Con gen Fourier, il problema a q grandi == lambda piccoli non c'è.
+            Il problema della nonperiodicità neanche, perché i dati generati sono effettivamente periodici. Se si applica comunque il windowing, 
+            che in questo caso è assolutamente NON NECESSARIO, si ha uno deformazione per Q PICCOLI == lambda GRANDI, che comunque non influisce 
+            sul risultato.
+            
+            Se si generano dati non-periodici tagliando un quadrato di una superficie più grande:
+                se NON si una il windowing, il problema è lo stesso degli altri metodi (drift verso 0.5) ed è serio.
+                se si usa il windowing, la deformazione per Q PICCOLI == lambda GRANDI di quando si applica il metodo con windowing ai dati periodici
+                c'è ancora, anzi è più forte, e sballa significativamente i dati per gen_H alto. (questo potrebbe essere qualcos altro).
+            
+       
+
+13 maggio
+    - la correlazione fatta con fft non va bene?
+    
+    - autocorrelation. waste of time. it's linear decay. no idea what that means. nobody even cares
+
+
+
+------ things to regret:
+    fbm2D-exact, changed parameter-setting part to attempt to eliminate difference between <0.75 and >0.75  -- undone
+
+    
+
+
+ricerca in avanti citazioni WU-1997
+
+
+
+RIFARE NUMERAZIONE
+
+
+
+
+
+

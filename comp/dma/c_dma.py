@@ -46,19 +46,26 @@ def dma_1(z2d, min_nonzero=0.99, s_min=5, s_max="auto"):
 
     return s_out, f_out
 
+
+
+
 if __name__ == "__main__":
-    z2d = fract.fbm2D(H=0.6, N=9)
-    z2d = fract.cut_profile(z2d, 0.99)
-    z2d = z2d[ 0:z2d.shape[1]//3, : ]
+    # z2d = fract.fbm2D(H=0.6, N=9)
+    # z2d = fract.cut_profile(z2d, 0.99)
 
-    # name = "Narcanello"
-    # z2d = np.load("/home/gaboloth/D/fisica/tesi/dati/npysquare/all/"+name+"-2d.npy")
-    # z2d = z2d * 0.0001
-   
+    name = "Fellaria Est"
+    z2d = np.load("/home/gaboloth/D/fisica/tesi/dati/npysquare/all/"+name+"-2d.npy")
+    z2d = z2d * 0.0002
+    
+    # np.mean(z2d)
+    # np.std(z2d)
 
-    plt.figure()
-    plt.imshow(z2d)
-    plt.show()
+    # shunk = z2d.shape[1]//3
+    # z2d = z2d[ :, 2*shunk:3*shunk ]
+
+    # plt.figure()
+    # plt.imshow(z2d)
+    # plt.show()
 
     # dfa_H, dfa_c, scales, flucts = fract.dfa_H(z2d)
     # plt.figure()
@@ -87,24 +94,24 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
 
-    dma_1, dma_c, pcov = fract.autoseeded_weighted_power_law_fit(scales_out, flucts_out, sigmas=flucts_out)
+    dma_1, dma_c, pcov = fract.autoseeded_weighted_power_law_fit(scales_out[:25], flucts_out[:25], sigmas=flucts_out[:25])
     np.min(scales_out)
 
     print("dma_1", dma_1)
 
     # ### branches
     # scale_f1 = 17
-    # scale_f2 = 25
+    scale_f2 = 25
 
     # dfa_H2, c2, pcov = fract.autoseeded_weighted_power_law_fit(scales_out[:scale_f1], flucts_out[:scale_f1], flucts_out[:scale_f1])
-    # dfa_H, c, pcov = fract.autoseeded_weighted_power_law_fit(scales_out[scale_f2:], flucts_out[scale_f2:], flucts_out[scale_f2:])
+    dfa_H2, c2, pcov = fract.autoseeded_weighted_power_law_fit(scales_out[scale_f2:], flucts_out[scale_f2:], flucts_out[scale_f2:])
     # print("dfa_H2", dfa_H2)
 
 
     plt.figure()
     plt.scatter(scales_out, flucts_out)
     plt.plot(scales_out, fract.power_law(scales_out, dma_1, dma_c), color="springgreen", label="dma: H ="+str(dma_1))
-    # plt.plot(scales_out, fract.power_law(scales_out, dfa_H2, c2), color="red", label="dfa: H = "+str(dfa_H2))
+    plt.plot(scales_out, fract.power_law(scales_out, dfa_H2, c2), color="red", label="dfa: H = "+str(dfa_H2))
 
     # plt.plot(scales_out, fract.power_law(scales_out, fourier_H, c2/0.8), color="purple", label="fourier: H = "+str(fourier_H))
 
@@ -112,4 +119,3 @@ if __name__ == "__main__":
     plt.yscale("log")
     plt.legend()
     plt.show()
-

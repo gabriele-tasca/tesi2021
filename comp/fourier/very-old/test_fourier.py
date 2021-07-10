@@ -5,9 +5,9 @@ import fourier
 
 import fract
 
-N = 8
+N = 9
 
-stat_n = 30
+stat_n = 20
 
 start = 0.1
 stop = 0.9001
@@ -24,10 +24,10 @@ for (i,H) in enumerate( np.arange(start,stop=stop,step=step) ):
 
         # generate
         # Random.seed!(729 + i*34);
-        data = fract.fbm2D(H,N=N)
+        z2d = fract.fbm2D_midpoint_old2(H,N=N)
 
         # dfa
-        h_detected, freq_exp, c, freqs, powers = fract.profile_fourier_from_z2d(data)
+        h_detected = 2*fract.fourier_H(z2d, data=False)
         stat_res[j] = h_detected
         # print("     ", j)
 
